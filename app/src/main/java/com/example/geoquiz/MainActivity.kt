@@ -11,7 +11,6 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        Log.d(TAG, "Updating question text", Exception())
+        Log.d(TAG, "Updating question text")
         questionTextView.setText(quizViewModel.currentQuestionText)
 
         if (!quizViewModel.checkIsAnswered()) {
@@ -137,16 +136,24 @@ class MainActivity : AppCompatActivity() {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResId = if (quizViewModel.checkIsCheated()) {
+            quizViewModel.addWrongAnswer()
             R.string.judgment_toast
         } else if (userAnswer == correctAnswer) {
             quizViewModel.addCorrectAnswer()
             R.string.correct_toast
         } else {
+            quizViewModel.addWrongAnswer()
             R.string.incorrect_toast
         }
 
         val toast = Toast.makeText(applicationContext, messageResId, Toast.LENGTH_SHORT)
         toast.show()
+
+        if (quizViewModel.checkIsCompleted()) {
+            val messageText = "Вы набрали " + quizViewModel.getResult().toInt() + "% правильных ответов"
+            val resultToast = Toast.makeText(applicationContext, messageText, Toast.LENGTH_LONG)
+            resultToast.show()
+        }
     }
 
     private fun enableButtons(bool: Boolean) {

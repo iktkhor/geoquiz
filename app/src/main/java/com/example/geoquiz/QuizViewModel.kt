@@ -22,6 +22,7 @@ class QuizViewModel : ViewModel() {
     var isCheater = false
 
     private var correctAnswers = 0
+    private var wrongAnswers = 0
 
     val currentQuestionAnswer: Boolean
         get() = questionBank[currentIndex].answer
@@ -41,8 +42,16 @@ class QuizViewModel : ViewModel() {
         }
     }
 
+    fun getResult(): Float {
+        return (correctAnswers.toFloat() / questionBank.size * 100)
+    }
+
     fun addCorrectAnswer() {
         correctAnswers++
+    }
+
+    fun addWrongAnswer() {
+        wrongAnswers++
     }
 
     fun flagAsAnswered() {
@@ -59,6 +68,10 @@ class QuizViewModel : ViewModel() {
 
     fun checkIsCheated(): Boolean {
         return is_cheated[currentIndex]
+    }
+
+    fun checkIsCompleted(): Boolean {
+        return (correctAnswers + wrongAnswers) == questionBank.size
     }
 
     init {
