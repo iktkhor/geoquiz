@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
@@ -24,10 +25,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var trueButton: Button
     private lateinit var falseButton: Button
-    private lateinit var nextButton: Button
-    private lateinit var prevButton: Button
+    private lateinit var nextButton: ImageButton
+    private lateinit var prevButton: ImageButton
     private lateinit var cheatButton: Button
-
     private lateinit var questionTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,8 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (requestCode == REQUEST_CODE_CHEAT) {
-            quizViewModel.isCheater =
-                data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false)?: false
+            quizViewModel.flagAsCheated()
         }
     }
 
@@ -117,11 +116,11 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         Log.d(TAG, "onStop() called")
     }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy() called")
     }
-
 
     private fun updateQuestion() {
         Log.d(TAG, "Updating question text", Exception())
@@ -137,7 +136,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
-        val messageResId = if (quizViewModel.isCheater) {
+        val messageResId = if (quizViewModel.checkIsCheated()) {
             R.string.judgment_toast
         } else if (userAnswer == correctAnswer) {
             quizViewModel.addCorrectAnswer()
@@ -146,7 +145,8 @@ class MainActivity : AppCompatActivity() {
             R.string.incorrect_toast
         }
 
-        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        val toast = Toast.makeText(applicationContext, messageResId, Toast.LENGTH_SHORT)
+        toast.show()
     }
 
     private fun enableButtons(bool: Boolean) {

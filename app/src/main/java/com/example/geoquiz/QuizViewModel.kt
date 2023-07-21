@@ -16,6 +16,7 @@ class QuizViewModel : ViewModel() {
         Question(R.string.question_asia, true))
 
     private var is_answered = Array(questionBank.size, {false})
+    private var is_cheated = Array(questionBank.size, {false})
 
     var currentIndex = 0
     var isCheater = false
@@ -33,7 +34,11 @@ class QuizViewModel : ViewModel() {
     }
 
     fun moveToPrev() {
-        currentIndex = (currentIndex - 1) % questionBank.size
+        currentIndex = if (currentIndex > 0) {
+            (currentIndex - 1) % questionBank.size
+        } else {
+            questionBank.size - 1
+        }
     }
 
     fun addCorrectAnswer() {
@@ -44,8 +49,16 @@ class QuizViewModel : ViewModel() {
         is_answered[currentIndex] = true
     }
 
+    fun flagAsCheated() {
+        is_cheated[currentIndex] = true
+    }
+
     fun checkIsAnswered(): Boolean {
         return is_answered[currentIndex]
+    }
+
+    fun checkIsCheated(): Boolean {
+        return is_cheated[currentIndex]
     }
 
     init {
