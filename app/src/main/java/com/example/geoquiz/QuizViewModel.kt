@@ -19,7 +19,6 @@ class QuizViewModel : ViewModel() {
     private var is_cheated = Array(questionBank.size, {false})
 
     var currentIndex = 0
-    var isCheater = false
 
     private var correctAnswers = 0
     private var wrongAnswers = 0
