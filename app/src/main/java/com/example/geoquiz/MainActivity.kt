@@ -33,12 +33,12 @@ class MainActivity : AppCompatActivity() {
 
      private val cheatActivityLauncher = registerForActivityResult(
          ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-
              if (result.resultCode == RESULT_OK) {
                  val isCheated = result.data?.getBooleanExtra("answer_shown", false)
                  Log.d(TAG, "$isCheated")
                  if (isCheated != null && isCheated) {
                      quizViewModel.flagAsCheated()
+
                  }
              }
      }
