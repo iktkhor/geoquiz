@@ -11,15 +11,17 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
-private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
     private val quizViewModel: QuizViewModel by lazy {
-        ViewModelProvider(this).get(QuizViewModel::class.java)
+        ViewModelProvider(this)[QuizViewModel::class.java]
     }
 
     private lateinit var trueButton: Button
@@ -29,9 +31,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cheatButton: Button
     private lateinit var questionTextView: TextView
 
+     private val cheatActivityLauncher = registerForActivityResult(
+         ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+
+             if (result.resultCode == RESULT_OK) {
+                 val isCheated = result.data?.getBooleanExtra("answer_shown", false)
+                 Log.d(TAG, "$isCheated")
+                 if (isCheated != null && isCheated) {
+                     quizViewModel.flagAsCheated()
+                 }
+             }
+     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
         quizViewModel.currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?:0
@@ -68,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         cheatButton.setOnClickListener {
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            cheatActivityLauncher.launch(intent)
         }
 
         questionTextView.setOnClickListener {
@@ -79,50 +92,13 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != Activity.RESULT_OK) {
-            return
-        }
-
-        if (requestCode == REQUEST_CODE_CHEAT) {
-            quizViewModel.flagAsCheated()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart() called")
-    }
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume() called")
-    }
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause() called")
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.i(TAG, "onSaveInstanceState")
         outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
 
     }
 
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop() called")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy() called")
-    }
-
     private fun updateQuestion() {
-        Log.d(TAG, "Updating question text")
         questionTextView.setText(quizViewModel.currentQuestionText)
 
         if (!quizViewModel.checkIsAnswered()) {

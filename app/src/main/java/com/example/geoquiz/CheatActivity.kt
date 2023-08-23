@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 
-const val EXTRA_ANSWER_SHOWN = "com.example.geoquiz.answer_shown"
+const val EXTRA_ANSWER_SHOWN = "answer_shown"
 private const val EXTRA_ANSWER_IS_TRUE = "com.example.geoquiz.answer_is_true"
 
 class CheatActivity : AppCompatActivity() {
@@ -18,7 +18,7 @@ class CheatActivity : AppCompatActivity() {
     private lateinit var showAnswerButton: Button
 
     private val cheatViewModel: CheatViewModel by lazy {
-        ViewModelProvider(this).get(CheatViewModel::class.java)
+        ViewModelProvider(this)[CheatViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +43,7 @@ class CheatActivity : AppCompatActivity() {
 
     private fun setAnswerResultShown(isAnswerShown: Boolean) {
         val data = Intent().apply {
-            putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)
+            putExtra("answer_shown", isAnswerShown)
         }
         setResult(Activity.RESULT_OK, data)
     }
