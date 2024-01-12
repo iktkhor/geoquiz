@@ -31,17 +31,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cheatButton: Button
     private lateinit var questionTextView: TextView
 
-     private val cheatActivityLauncher = registerForActivityResult(
-         ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-             if (result.resultCode == RESULT_OK) {
-                 val isCheated = result.data?.getBooleanExtra("answer_shown", false)
-                 Log.d(TAG, "$isCheated")
-                 if (isCheated != null && isCheated) {
-                     quizViewModel.flagAsCheated()
+    private val cheatActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == RESULT_OK) {
+            val isCheated = result.data?.getBooleanExtra("answer_shown", false)
+            Log.d(TAG, "$isCheated")
+            if (isCheated != null && isCheated) {
+                quizViewModel.flagAsCheated()
 
-                 }
-             }
-     }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
